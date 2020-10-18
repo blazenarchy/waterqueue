@@ -1,7 +1,11 @@
 default_queue_server: queue
 default_play_server: anarchy
 queues:
-  default:
-    priority: 1          # optional, defaults to 0
+  normal:
+    priority: 1          # required, must be different than all other queue servers with the same play server.
     play_server: anarchy # optional, defaults to the play server specified at the top of the config
     queue_server: queue  # optional, defaults to the queue server specified at the top of the config
+  priority:
+    priority: 2
+    play_server: anarchy
+    queue_server: queue

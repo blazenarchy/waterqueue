@@ -1,5 +1,5 @@
-name: Waterfall Queue
+name: Waterqueue
 author: wnuke
 version: @version@
 main: dev.wnuke.waterqueue.Waterqueue
-description: A queueing plugin for the waterfall Minecraft server proxy.
+description: A queueing plugin for the Waterfall Minecraft server proxy.
