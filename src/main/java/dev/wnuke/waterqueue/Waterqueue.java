@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 
 public final class Waterqueue extends Plugin {
+    public static boolean logQueue = false;
     public static Waterqueue INSTANCE;
     public static Configuration config;
     public static QueueManager manager;
@@ -24,7 +25,7 @@ public final class Waterqueue extends Plugin {
         getLogger().info("Loading Waterqueue by wnuke...");
         File configFile = new File(getDataFolder(), "config.yml");
         INSTANCE = this;
-        if (!getDataFolder().exists()) getDataFolder().mkdir();
+        if (!getDataFolder().exists()) getDataFolder().mkdirs();
         if (!configFile.exists()) {
             try (InputStream in = getResourceAsStream("config.yml")) {
                 Files.copy(in, configFile.toPath());
@@ -43,6 +44,7 @@ public final class Waterqueue extends Plugin {
             onDisable();
             return;
         }
+        if (config.getBoolean("queue_logs")) logQueue = true;
         Configuration queueConfigs = config.getSection("queues");
         if (queueConfigs == null || queueConfigs.getKeys().isEmpty()) {
             getLogger().severe("Waterqueue has no queues specified in it's configuration.");
@@ -95,8 +97,7 @@ public final class Waterqueue extends Plugin {
         getLogger().info("Waterqueue by wnuke is loaded.");
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public void logQueue(String message) {
+        if (logQueue) getLogger().info(message);
     }
 }

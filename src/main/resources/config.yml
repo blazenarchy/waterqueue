@@ -1,5 +1,6 @@
 default_queue_server: queue
 default_play_server: anarchy
+queue_logs: false # Whether or not to log information on player Queuing (very spammy in logs, disable unless debugging"
 queues:
   normal:
     priority: 1          # required, must be different than all other queue servers with the same play server.

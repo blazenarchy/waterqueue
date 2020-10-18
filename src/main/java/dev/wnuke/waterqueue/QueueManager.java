@@ -23,7 +23,7 @@ public class QueueManager implements Listener {
         for (String permission : event.getPlayer().getPermissions()) {
             permissions.append(permission).append(", ");
         }
-        Waterqueue.INSTANCE.getLogger().info(event.getPlayer().getName() + " has the following permissions: " + permissions.toString());
+        Waterqueue.INSTANCE.logQueue(event.getPlayer().getName() + " has the following permissions: " + permissions.toString());
         ArrayList<Queue> playerQueues = new ArrayList<>();
         for (Map.Entry<String, Queue> queueEntry : queues.entrySet()) {
             if (event.getPlayer().hasPermission("waterqueue.queue." + queueEntry.getKey())) {
@@ -34,7 +34,7 @@ public class QueueManager implements Listener {
         if (!playerQueues.isEmpty()) {
             Queue queue = playerQueues.get(playerQueues.size() - 1);
             queue.playServer.ping(new PingCallback(queue, event.getPlayer()));
-            Waterqueue.INSTANCE.getLogger().info(event.getPlayer().getName() + " going into \"" + queue.name + "\" queue.");
+            Waterqueue.INSTANCE.logQueue(event.getPlayer().getName() + " going into \"" + queue.name + "\" queue.");
         }
     }
 
@@ -55,7 +55,7 @@ public class QueueManager implements Listener {
         for (Queue queue : queuesForServer) {
             long wait = (time - queue.timeLastLeft) * queue.priority;
             if (wait >= longestWait) {
-                Waterqueue.INSTANCE.getLogger().info(queue.name + " has waited " + wait + " and the longest wait is " + longestWait + " (queue " + (nextUp != null ? nextUp.name : null) + ").");
+                Waterqueue.INSTANCE.logQueue(queue.name + " has waited " + wait + " and the longest wait is " + longestWait + " (queue " + (nextUp != null ? nextUp.name : null) + ").");
                 longestWait = wait;
                 nextUp = queue;
             }
