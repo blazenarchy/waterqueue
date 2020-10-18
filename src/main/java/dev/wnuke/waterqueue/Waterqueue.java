@@ -8,6 +8,8 @@ import net.md_5.bungee.config.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.HashMap;
 
 public final class Waterqueue extends Plugin {
@@ -19,13 +21,26 @@ public final class Waterqueue extends Plugin {
 
     @Override
     public void onEnable() {
+        File configFile = new File(getDataFolder(), "config.yml");
         getLogger().info("Loading Waterqueue by wnuke...");
         INSTANCE = this;
+        if (!getDataFolder().exists()) getDataFolder().mkdir();
+        if (!configFile.exists()) {
+            try (InputStream in = getResourceAsStream("config.yml")) {
+                Files.copy(in, configFile.toPath());
+            } catch (IOException e) {
+                getLogger().severe("Waterqueue failed to load, could not save default configuration.");
+                e.printStackTrace();
+                onDisable();
+                return;
+            }
+        }
         try {
-            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
+            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
         } catch (IOException e) {
             getLogger().severe("Waterqueue failed to load, could not read configuration.");
             e.printStackTrace();
+            onDisable();
             return;
         }
         Configuration queueConfigs = config.getSection("queues");
