@@ -9,14 +9,16 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.net.SocketAddress;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-public class Queue implements Listener {
+public class Queue implements Listener, Comparable<Queue> {
     public String name;
     public ServerInfo playServer;
     public ServerInfo queueServer;
-    public int priority;
+    public long timeLastLeft = 0;
+    public Integer priority;
     private final LinkedList<ProxiedPlayer> players = new LinkedList<>();
     private final HashSet<SocketAddress> playerAddresses = new HashSet<>();
 
@@ -28,6 +30,7 @@ public class Queue implements Listener {
     }
 
     public void join(ProxiedPlayer player) {
+        Waterqueue.INSTANCE.getLogger().info(player.getName() + " has joined the \"" + name + "\" queue.");
         players.add(player);
         playerAddresses.add(player.getSocketAddress());
         player.connect(queueServer);
@@ -47,19 +50,23 @@ public class Queue implements Listener {
         if (playerAddresses.contains(event.getSender().getSocketAddress())) event.setCancelled(true);
     }
 
-    public void handleDisconnect(ServerInfo server) {
-        if (server == playServer) {
-            if (players.size() > 0) {
-                ProxiedPlayer first = players.getFirst();
-                if (first != null) {
-                    first.connect(playServer);
-                    playerAddresses.remove(first.getSocketAddress());
-                    players.removeFirst();
-                    for (ProxiedPlayer player : players) {
-                        sendQueuePos(player);
-                    }
+    public void handleDisconnect() {
+        timeLastLeft = new Date().getTime();
+        if (players.size() > 0) {
+            ProxiedPlayer first = players.getFirst();
+            if (first != null) {
+                first.connect(playServer);
+                playerAddresses.remove(first.getSocketAddress());
+                players.removeFirst();
+                for (ProxiedPlayer player : players) {
+                    sendQueuePos(player);
                 }
             }
         }
+    }
+
+    @Override
+    public int compareTo(Queue o) {
+        return this.priority.compareTo(o.priority);
     }
 }

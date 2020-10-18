@@ -21,8 +21,8 @@ public final class Waterqueue extends Plugin {
 
     @Override
     public void onEnable() {
-        File configFile = new File(getDataFolder(), "config.yml");
         getLogger().info("Loading Waterqueue by wnuke...");
+        File configFile = new File(getDataFolder(), "config.yml");
         INSTANCE = this;
         if (!getDataFolder().exists()) getDataFolder().mkdir();
         if (!configFile.exists()) {
@@ -49,11 +49,11 @@ public final class Waterqueue extends Plugin {
         } else {
             defaultPlayServer = getProxy().getServerInfo(config.getString("default_play_server"));
             if (defaultPlayServer == null) {
-                getLogger().warning("The specified default play server does not exist.");
+                getLogger().severe("The specified default play server does not exist.");
             }
             defaultQueueServer = getProxy().getServerInfo(config.getString("default_queue_server"));
             if (defaultQueueServer == null) {
-                getLogger().warning("The specified default queue server does not exist.");
+                getLogger().severe("The specified default queue server does not exist.");
             }
             HashMap<String, Queue> queues = new HashMap<>();
             loopConfigs:

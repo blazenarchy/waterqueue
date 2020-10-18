@@ -5,10 +5,7 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 
 public class QueueManager implements Listener {
     private final HashMap<String, Queue> queues;
@@ -22,46 +19,47 @@ public class QueueManager implements Listener {
 
     @EventHandler
     public void onJoin(PostLoginEvent event) {
+        StringBuilder permissions = new StringBuilder();
+        for (String permission : event.getPlayer().getPermissions()) {
+            permissions.append(permission).append(", ");
+        }
+        Waterqueue.INSTANCE.getLogger().info(event.getPlayer().getName() + " has the following permissions: " + permissions.toString());
+        ArrayList<Queue> playerQueues = new ArrayList<>();
         for (Map.Entry<String, Queue> queueEntry : queues.entrySet()) {
             if (event.getPlayer().hasPermission("waterqueue.queue." + queueEntry.getKey())) {
-                queueEntry.getValue().playServer.ping(new PingCallback(queueEntry.getValue(), event.getPlayer()));
+                playerQueues.add(queueEntry.getValue());
             }
+        }
+        playerQueues.sort(Queue::compareTo);
+        if (!playerQueues.isEmpty()) {
+            Queue queue = playerQueues.get(playerQueues.size() - 1);
+            queue.playServer.ping(new PingCallback(queue, event.getPlayer()));
+            Waterqueue.INSTANCE.getLogger().info(event.getPlayer().getName() + " going into \"" + queue.name + "\" queue.");
         }
     }
 
     @EventHandler
     public void onDisconnect(ServerDisconnectEvent event) {
-        HashSet<Queue> queuesForServer = new HashSet<>();
-        Queue lowestPriority = null;
+        ArrayList<Queue> queuesForServer = new ArrayList<>();
         for (Queue queue : queues.values()) {
             if (queue.playServer == event.getTarget()) {
                 if (queue.getPlayerCount() > 0) {
                     queuesForServer.add(queue);
-                    if (lowestPriority == null) lowestPriority = queue;
-                    else if (queue.priority < lowestPriority.priority) lowestPriority = queue;
                 }
             }
         }
-        if (lowestPriority != null) {
-            Queue worstRatio = null;
-            int worstDifference = 0;
-            for (Queue queue : queuesForServer) {
-                int ratio = lowestPriority.priority / queue.priority;
-                int playerRatio;
-                if (queue.name.equals(lowestPriority.name)) {
-                    playerRatio = 0;
-                } else {
-                    playerRatio = queue.getPlayerCount() / lowestPriority.getPlayerCount();
-                }
-                int difference = playerRatio - ratio;
-                if (difference > worstDifference || worstRatio == null) {
-                    worstDifference = difference;
-                    worstRatio = queue;
-                }
-            }
-            if (worstRatio != null) {
-                worstRatio.handleDisconnect(event.getTarget());
+        queuesForServer.sort(Queue::compareTo);
+        long longestWait = 0;
+        long time = new Date().getTime();
+        Queue nextUp = null;
+        for (Queue queue : queuesForServer) {
+            long wait = (time - queue.timeLastLeft) * queue.priority;
+            if (wait >= longestWait) {
+                Waterqueue.INSTANCE.getLogger().info(queue.name + " has waited " + wait + " and the longest wait is " + longestWait + " (queue " + (nextUp != null ? nextUp.name : null) + ").");
+                longestWait = wait;
+                nextUp = queue;
             }
         }
+        if (nextUp != null) nextUp.handleDisconnect();
     }
 }
