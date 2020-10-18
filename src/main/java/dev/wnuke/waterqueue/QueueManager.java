@@ -5,6 +5,7 @@ import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,19 +42,26 @@ public class QueueManager implements Listener {
                 }
             }
         }
-        Queue worstRatio = null;
-        int worstDifference = 0;
-        for (Queue queue : queuesForServer) {
-            int ratio = lowestPriority.priority / queue.priority;
-            int playerRatio = queue.getPlayerCount() / lowestPriority.getPlayerCount();
-            int difference = playerRatio - ratio;
-            if (difference > worstDifference) {
-                worstDifference = difference;
-                worstRatio = queue;
+        if (lowestPriority != null) {
+            Queue worstRatio = null;
+            int worstDifference = 0;
+            for (Queue queue : queuesForServer) {
+                int ratio = lowestPriority.priority / queue.priority;
+                int playerRatio;
+                if (queue.name.equals(lowestPriority.name)) {
+                    playerRatio = 0;
+                } else {
+                    playerRatio = queue.getPlayerCount() / lowestPriority.getPlayerCount();
+                }
+                int difference = playerRatio - ratio;
+                if (difference > worstDifference || worstRatio == null) {
+                    worstDifference = difference;
+                    worstRatio = queue;
+                }
             }
-        }
-        if (worstRatio != null) {
-            worstRatio.handleDisconnect(event.getTarget());
+            if (worstRatio != null) {
+                worstRatio.handleDisconnect(event.getTarget());
+            }
         }
     }
 }

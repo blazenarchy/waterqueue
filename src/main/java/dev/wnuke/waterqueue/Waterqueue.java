@@ -56,7 +56,7 @@ public final class Waterqueue extends Plugin {
                 getLogger().warning("The specified default queue server does not exist.");
             }
             HashMap<String, Queue> queues = new HashMap<>();
-            loopconfigs:
+            loopConfigs:
             for (String queueName : queueConfigs.getKeys()) {
                 Configuration queueConfig = queueConfigs.getSection(queueName);
                 String playServerName = queueConfigs.getString("play_server");
@@ -83,7 +83,7 @@ public final class Waterqueue extends Plugin {
                 for (Queue queue : queues.values()) {
                     if (queue.priority == priority) {
                         getLogger().warning(queueName + " has the same priority as " + queue.name + ", skipping it.");
-                        continue loopconfigs;
+                        continue loopConfigs;
                     }
                 }
                 Queue queue = new Queue(queueName, priority, playServer, queueServer);
