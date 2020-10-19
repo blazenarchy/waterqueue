@@ -1,6 +1,5 @@
 package dev.wnuke.waterqueue;
 
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -37,40 +36,6 @@ public class QueueManager implements Listener {
             queue.playServer.ping(new PingCallback(queue, event.getPlayer()));
             Waterqueue.INSTANCE.logQueue(event.getPlayer().getName() + " going into \"" + queue.name + "\" queue.");
         }
-    }
-
-    public long getPlayerQueueAverage(UUID playerID) {
-        ProxiedPlayer player = Waterqueue.INSTANCE.getProxy().getPlayer(playerID);
-        if (player == null) return 0;
-        for (Queue queue : queues.values()) {
-            if (queue.playerInQueue(player)) {
-                return queue.averageTimeInFirst;
-            }
-        }
-        return 0;
-    }
-
-    public String getPlayerQueue(UUID playerID) {
-        ProxiedPlayer player = Waterqueue.INSTANCE.getProxy().getPlayer(playerID);
-        if (player == null) return "";
-        for (Queue queue : queues.values()) {
-            if (queue.playerInQueue(player)) {
-                return queue.name;
-            }
-        }
-        return "";
-    }
-
-
-    public int getPlayerPosition(UUID playerID) {
-        ProxiedPlayer player = Waterqueue.INSTANCE.getProxy().getPlayer(playerID);
-        if (player == null) return -1;
-        for (Queue queue : queues.values()) {
-            if (queue.playerInQueue(player)) {
-                return queue.getQueuePos(player);
-            }
-        }
-        return -1;
     }
 
     @EventHandler

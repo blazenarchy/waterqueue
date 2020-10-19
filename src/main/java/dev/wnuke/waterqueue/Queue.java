@@ -47,9 +47,6 @@ public class Queue implements Listener, Comparable<Queue> {
         return players.size();
     }
 
-    public boolean playerInQueue(ProxiedPlayer player) {
-        return players.contains(player);
-    }
 
     public long getPlayerEta(ProxiedPlayer player, Long position) {
         return position != null ? position : getQueuePos(player) * averageTimeInFirst;
