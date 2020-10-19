@@ -16,10 +16,10 @@ public class Queue implements Listener, Comparable<Queue> {
     public ServerInfo playServer;
     public ServerInfo queueServer;
     public long timeLastLeft = 0;
-    public long averageTime = 0;
+    public long averageTimeInFirst = 0;
     public Integer priority;
-    private final HashSet<Integer> timesInQueue = new HashSet<>();
-    private final HashMap<UUID, Integer> playerTimesJoined = new HashMap<>();
+    private final HashSet<Long> timesInFirst = new HashSet<>();
+    private final HashMap<UUID, Long> playerTimeFirst = new HashMap<>();
     private final LinkedList<ProxiedPlayer> players = new LinkedList<>();
     private final HashSet<SocketAddress> playerAddresses = new HashSet<>();
 
@@ -32,18 +32,35 @@ public class Queue implements Listener, Comparable<Queue> {
 
     public void join(ProxiedPlayer player) {
         Waterqueue.INSTANCE.logQueue(player.getName() + " has joined the \"" + name + "\" queue.");
+        if (players.peekFirst() == player) {
+            playerTimeFirst.put(player.getUniqueId(), new Date().getTime());
+        }
         players.add(player);
         playerAddresses.add(player.getSocketAddress());
         player.connect(queueServer);
-        sendQueuePos(player);
+        long pos = getQueuePos(player);
+        sendQueuePos(player, pos);
+        Placeholders.sendPlayerQueueInfo(new QueuedPlayerInfo(player.getUniqueId(), getPlayerEta(player, pos), pos, name), this);
     }
 
     public int getPlayerCount() {
         return players.size();
     }
 
-    public void sendQueuePos(ProxiedPlayer player) {
-        player.sendMessage(new TextComponent(ChatColor.YELLOW + "Your position in queue is: " + players.indexOf(player)));
+    public boolean playerInQueue(ProxiedPlayer player) {
+        return players.contains(player);
+    }
+
+    public long getPlayerEta(ProxiedPlayer player, Long position) {
+        return position != null ? position : getQueuePos(player) * averageTimeInFirst;
+    }
+
+    public int getQueuePos(ProxiedPlayer player) {
+        return players.indexOf(player) + 1;
+    }
+
+    public void sendQueuePos(ProxiedPlayer player, Long position) {
+        player.sendMessage(new TextComponent(ChatColor.YELLOW + "Your position in queue is: " + (position != null ? position : getQueuePos(player))));
     }
 
     @EventHandler
@@ -59,8 +76,18 @@ public class Queue implements Listener, Comparable<Queue> {
                 first.connect(playServer);
                 playerAddresses.remove(first.getSocketAddress());
                 players.removeFirst();
+                timesInFirst.add(timeLastLeft - playerTimeFirst.get(first.getUniqueId()));
+                ProxiedPlayer newFirst = players.peekFirst();
+                if (newFirst != null) playerTimeFirst.put(newFirst.getUniqueId(), new Date().getTime());
+                int newAverage = 0;
+                for (long time : timesInFirst) {
+                    newAverage += time;
+                }
+                averageTimeInFirst = newAverage / timesInFirst.size();
                 for (ProxiedPlayer player : players) {
-                    sendQueuePos(player);
+                    long pos = getQueuePos(player);
+                    sendQueuePos(player, pos);
+                    Placeholders.sendPlayerQueueInfo(new QueuedPlayerInfo(player.getUniqueId(), getPlayerEta(player, pos), pos, name), this);
                 }
             }
         }

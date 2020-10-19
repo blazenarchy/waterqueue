@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 
 public final class Waterqueue extends Plugin {
+    public static final String QUEUETIME = "QueueAverage";
     public static boolean logQueue = false;
     public static Waterqueue INSTANCE;
     public static Configuration config;
