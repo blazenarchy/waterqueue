@@ -5,5 +5,5 @@ import com.google.gson.GsonBuilder;
 
 public class Global {
     public static Gson gson = new GsonBuilder().create();
-    public static final String INFO_CHANNEL = "QueueInfoChannel";
+    public static final String INFO_CHANNEL = "waterqueue:infochannel";
 }

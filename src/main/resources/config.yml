@@ -1,12 +1,14 @@
-default_queue_server: queue
-default_play_server: anarchy
+death_kick_message: "You have died, please rejoin." # only used by the companion plugin
+
+default_queue_server: "queue"
+default_play_server: "anarchy"
 queue_logs: false # Whether or not to log information on player Queuing (very spammy in logs, disable unless debugging"
 queues:
   normal:
     priority: 1          # required, must be different than all other queue servers with the same play server.
-    play_server: anarchy # optional, defaults to the play server specified at the top of the config
-    queue_server: queue  # optional, defaults to the queue server specified at the top of the config
+    play_server: "anarchy" # optional, defaults to the play server specified at the top of the config
+    queue_server: "queue"  # optional, defaults to the queue server specified at the top of the config
   priority:
     priority: 2
-    play_server: anarchy
-    queue_server: queue
+    play_server: "anarchy"
+    queue_server: "queue"

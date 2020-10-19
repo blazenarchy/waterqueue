@@ -15,12 +15,20 @@ public class PingCallback implements Callback<ServerPing> {
 
     @Override
     public void done(ServerPing result, Throwable error) {
-        if (result.getPlayers().getOnline() >= result.getPlayers().getMax()) {
-            Waterqueue.INSTANCE.logQueue(queue.name + " target server full sending player " + player.getName() + " to the queue.");
-            queue.join(player);
-        } else {
-            Waterqueue.INSTANCE.logQueue(queue.name + " target server empty sending player " + player.getName() + " directly to the server.");
-            player.connect(queue.playServer);
+        if (result != null) {
+            if (result.getPlayers() != null) {
+                if (result.getPlayers().getOnline() >= result.getPlayers().getMax()) {
+                    Waterqueue.INSTANCE.logQueue(queue.name + " target server full sending player " + player.getName() + " to the queue.");
+                    queue.join(player);
+                    return;
+                } else {
+                    Waterqueue.INSTANCE.logQueue(queue.name + " target server empty sending player " + player.getName() + " directly to the server.");
+                    player.connect(queue.playServer);
+                    return;
+                }
+            }
         }
+        Waterqueue.INSTANCE.logQueue(queue.name + " target server could not be pinged successfully, sending " + player.getName() + " to the queue.");
+        queue.join(player);
     }
 }

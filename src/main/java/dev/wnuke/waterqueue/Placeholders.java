@@ -4,18 +4,32 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import com.google.gson.reflect.TypeToken;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.util.HashSet;
+import java.util.UUID;
 
 public class Placeholders extends PlaceholderExpansion implements PluginMessageListener {
     private final HashSet<QueuedPlayerInfo> players = new HashSet<>();
 
+    public void removePlayer(UUID playerUuid) {
+        players.removeIf(info -> info.playerUuid.equals(playerUuid));
+    }
+
     @Override
     public String getIdentifier() {
         return "waterqueue";
+    }
+
+    @Override
+    public boolean canRegister() {
+        return true;
+    }
+
+    @Override
+    public boolean persist() {
+        return true;
     }
 
     @Override
@@ -29,12 +43,11 @@ public class Placeholders extends PlaceholderExpansion implements PluginMessageL
     }
 
     @Override
-    public String onRequest(final OfflinePlayer player, String identifier) {
+    public String onPlaceholderRequest(Player player, String params) {
         long value = -1;
-        if (player == null) return "";
         QueuedPlayerInfo playerInfo = null;
         for (QueuedPlayerInfo info : players) {
-            if (info.playerUuid == player.getUniqueId()) {
+            if (info.playerUuid.equals(player.getUniqueId())) {
                 playerInfo = info;
                 break;
             }
@@ -48,8 +61,8 @@ public class Placeholders extends PlaceholderExpansion implements PluginMessageL
             double hours = minutes / 60d;
             eta = String.valueOf(hours);
         }
-        switch (identifier) {
-            case "position":
+        switch (params) {
+            case "pos":
                 value = playerInfo.position;
                 break;
             case "eta":
@@ -66,9 +79,10 @@ public class Placeholders extends PlaceholderExpansion implements PluginMessageL
 
         //noinspection UnstableApiUsage
         final ByteArrayDataInput in = ByteStreams.newDataInput(message);
-        QueuedPlayerInfo newPlayerInfo = Global.gson.fromJson(in.readUTF(), new TypeToken<QueuedPlayerInfo>() {
+        String input = in.readUTF();
+        QueuedPlayerInfo newPlayerInfo = Global.gson.fromJson(input, new TypeToken<QueuedPlayerInfo>() {
         }.getType());
-        players.removeIf(info -> info.playerUuid == newPlayerInfo.playerUuid);
+        removePlayer(newPlayerInfo.playerUuid);
         players.add(newPlayerInfo);
     }
 }

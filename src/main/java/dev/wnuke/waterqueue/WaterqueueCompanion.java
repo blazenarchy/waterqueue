@@ -1,19 +1,21 @@
 package dev.wnuke.waterqueue;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.BroadcastMessageEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginMessageListener {
     public static WaterqueueCompanion INSTANCE;
+    private String deathKickMessage;
     private World end;
 
     @Override
@@ -36,6 +38,8 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
             end.setSpawnLocation(0, 0, 0);
             end.setPVP(false);
         }
+        saveDefaultConfig();
+        deathKickMessage = getConfig().getString("death_kick_message", "You have died, please rejoin.");
         getServer().setSpawnRadius(0);
         getServer().getPluginManager().registerEvents(this, this);
         getServer().setDefaultGameMode(GameMode.SPECTATOR);
@@ -43,6 +47,7 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
             Placeholders placeholders = new Placeholders();
             placeholders.register();
             getServer().getMessenger().registerIncomingPluginChannel(this, Global.INFO_CHANNEL, placeholders);
+            getLogger().info("Registered PlaceholderAPI placeholders.");
         }
         getLogger().info("Waterqueue by wnuke loaded.");
     }
@@ -65,7 +70,8 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
 
     @EventHandler
     public void playerDeath(PlayerDeathEvent event) {
-        event.getEntity().kickPlayer("You have died, please rejoin.");
+        event.getEntity().setHealth(20);
+        event.getEntity().kickPlayer(deathKickMessage);
         event.setDeathMessage(null);
     }
 
