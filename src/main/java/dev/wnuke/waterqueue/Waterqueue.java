@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.util.HashMap;
 
 public final class Waterqueue extends Plugin {
-    public static final String QUEUETIME = "QueueAverage";
     public static boolean logQueue = false;
     public static Waterqueue INSTANCE;
     public static Configuration config;
@@ -65,7 +64,8 @@ public final class Waterqueue extends Plugin {
                 String playServerName = queueConfigs.getString("play_server");
                 ServerInfo playServer = getProxy().getServerInfo(playServerName);
                 if (playServerName.isEmpty() || playServer == null) {
-                    if (playServer == null) getLogger().warning("Specified play server for " + queueName + " does not exist, using default.");
+                    if (playServer == null)
+                        getLogger().warning("Specified play server for " + queueName + " does not exist, using default.");
                     if (defaultPlayServer == null) {
                         getLogger().warning("Default play server not specified, skipping " + queueName + ".");
                         continue;
@@ -75,7 +75,8 @@ public final class Waterqueue extends Plugin {
                 String queueServerName = queueConfigs.getString("play_server");
                 ServerInfo queueServer = getProxy().getServerInfo(queueServerName);
                 if (queueServerName.isEmpty() || queueServer == null) {
-                    if (queueServer == null) getLogger().warning("Specified queue server for " + queueName + " does not exist, using default.");
+                    if (queueServer == null)
+                        getLogger().warning("Specified queue server for " + queueName + " does not exist, using default.");
                     if (defaultQueueServer == null) {
                         getLogger().warning("Default queue server not specified, skipping " + queueName + ".");
                         continue;

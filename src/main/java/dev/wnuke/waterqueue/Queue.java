@@ -12,16 +12,16 @@ import java.net.SocketAddress;
 import java.util.*;
 
 public class Queue implements Listener, Comparable<Queue> {
+    private final HashSet<Long> timesInFirst = new HashSet<>();
+    private final HashMap<UUID, Long> playerTimeFirst = new HashMap<>();
+    private final LinkedList<ProxiedPlayer> players = new LinkedList<>();
+    private final HashSet<SocketAddress> playerAddresses = new HashSet<>();
     public String name;
     public ServerInfo playServer;
     public ServerInfo queueServer;
     public long timeLastLeft = 0;
     public long averageTimeInFirst = 0;
     public Integer priority;
-    private final HashSet<Long> timesInFirst = new HashSet<>();
-    private final HashMap<UUID, Long> playerTimeFirst = new HashMap<>();
-    private final LinkedList<ProxiedPlayer> players = new LinkedList<>();
-    private final HashSet<SocketAddress> playerAddresses = new HashSet<>();
 
     public Queue(String name, int priority, ServerInfo playServer, ServerInfo queueServer) {
         this.name = name;

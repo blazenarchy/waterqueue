@@ -12,7 +12,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.jetbrains.annotations.NotNull;
 
 public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginMessageListener {
     public static WaterqueueCompanion INSTANCE;
@@ -20,6 +19,7 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
 
     @Override
     public void onEnable() {
+        getLogger().info("Loading Waterqueue by wnuke...");
         INSTANCE = this;
         for (World world : getServer().getWorlds()) {
             if (world.getEnvironment() == World.Environment.THE_END) {
@@ -39,6 +39,12 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
         }
         getServer().getPluginManager().registerEvents(this, this);
         getServer().setDefaultGameMode(GameMode.SPECTATOR);
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            Placeholders placeholders = new Placeholders();
+            placeholders.register();
+            getServer().getMessenger().registerIncomingPluginChannel(this, Placeholders.INFO_CHANNEL, placeholders);
+        }
+        getLogger().info("Waterqueue by wnuke loaded.");
     }
 
     @EventHandler
@@ -69,7 +75,7 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
     }
 
     @Override
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, @NotNull byte[] message) {
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
 
     }
 }
