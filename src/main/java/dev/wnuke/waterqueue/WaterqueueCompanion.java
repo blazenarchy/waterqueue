@@ -33,7 +33,7 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
             end.setDifficulty(Difficulty.PEACEFUL);
             end.setMonsterSpawnLimit(0);
             end.setKeepSpawnInMemory(true);
-            end.setSpawnLocation(0, 0, 0);
+            end.setSpawnLocation(0, 512, 0);
             end.setPVP(false);
         }
         saveDefaultConfig();
@@ -52,10 +52,12 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
 
     @EventHandler
     public void playerJoin(PlayerJoinEvent event) {
+        event.getPlayer().setHealth(20);
         for (Player player : getServer().getOnlinePlayers()) {
             player.hidePlayer(this, event.getPlayer());
             event.getPlayer().hidePlayer(this, player);
         }
+        event.getPlayer().setBedSpawnLocation(end.getSpawnLocation(), true);
         event.getPlayer().setGameMode(GameMode.SPECTATOR);
         event.getPlayer().teleport(end.getSpawnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
         event.setJoinMessage(null);
@@ -69,6 +71,7 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
     @EventHandler
     public void playerDeath(PlayerDeathEvent event) {
         event.getEntity().setHealth(20);
+        event.getEntity().teleport(end.getSpawnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
         event.getEntity().kickPlayer(deathKickMessage);
         event.setDeathMessage(null);
     }
