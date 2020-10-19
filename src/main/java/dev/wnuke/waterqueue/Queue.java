@@ -29,6 +29,12 @@ public class Queue implements Listener, Comparable<Queue> {
         this.priority = priority;
         this.playServer = playServer;
         this.queueServer = queueServer;
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                sendAllPlayersPos(false);
+            }
+        }, 0, 2000);
     }
 
     public void join(ProxiedPlayer player) {
@@ -42,7 +48,7 @@ public class Queue implements Listener, Comparable<Queue> {
         if (players.getFirst() == player) {
             playerTimeFirst.put(player.getUniqueId(), new Date().getTime());
         }
-        sendQueuePos(player);
+        sendQueuePos(player, true);
     }
 
     public int getPlayerCount() {
@@ -51,17 +57,22 @@ public class Queue implements Listener, Comparable<Queue> {
 
 
     public long getPlayerEta(ProxiedPlayer player, Long position) {
-        return position != null ? position : getQueuePos(player) * averageTimeInFirst;
+        return (position != null ? position : getQueuePos(player)) * averageTimeInFirst;
     }
 
     public int getQueuePos(ProxiedPlayer player) {
         return players.indexOf(player) + 1;
     }
 
-    public void sendQueuePos(ProxiedPlayer player) {
+    public void sendQueuePos(ProxiedPlayer player, boolean message) {
+        long newAverage = new Date().getTime() - timeLastLeft;
+        for (long time : timesInFirst) {
+            newAverage += time;
+        }
+        averageTimeInFirst = newAverage / (timesInFirst.size() + 1);
         long pos = getQueuePos(player);
         Waterqueue.sendPlayerQueueInfo(new QueuedPlayerInfo(player.getUniqueId(), getPlayerEta(player, pos), pos, name), this);
-        player.sendMessage(new TextComponent(ChatColor.YELLOW + "Your position in queue is: " + pos));
+        if (message) player.sendMessage(new TextComponent(ChatColor.YELLOW + "Your position in queue is: " + pos));
     }
 
     private void removePlayer(ProxiedPlayer player) {
@@ -69,9 +80,13 @@ public class Queue implements Listener, Comparable<Queue> {
             players.remove(player);
             playerAddresses.remove(player.getSocketAddress());
             playerTimeFirst.remove(player.getUniqueId());
-            for (ProxiedPlayer otherPlayer : players) {
-                sendQueuePos(otherPlayer);
-            }
+            sendAllPlayersPos(true);
+        }
+    }
+
+    private void sendAllPlayersPos(boolean message) {
+        for (ProxiedPlayer otherPlayer : players) {
+            sendQueuePos(otherPlayer, message);
         }
     }
 
@@ -93,11 +108,6 @@ public class Queue implements Listener, Comparable<Queue> {
                 ready.connect(playServer);
                 playerAddresses.remove(ready.getSocketAddress());
                 timesInFirst.add(timeLastLeft - playerTimeFirst.get(ready.getUniqueId()));
-                int newAverage = 0;
-                for (long time : timesInFirst) {
-                    newAverage += time;
-                }
-                averageTimeInFirst = newAverage / timesInFirst.size();
                 removePlayer(ready);
                 ProxiedPlayer newFirst = players.peekFirst();
                 if (newFirst != null) playerTimeFirst.put(newFirst.getUniqueId(), timeLastLeft);

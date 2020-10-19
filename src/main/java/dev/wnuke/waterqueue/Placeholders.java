@@ -53,20 +53,45 @@ public class Placeholders extends PlaceholderExpansion implements PluginMessageL
             }
         }
         if (playerInfo == null) return "";
-        long millis = playerInfo.eta;
-        String eta;
-        long minutes = millis / 1000 / 60;
-        if (minutes < 60) eta = String.valueOf(minutes);
-        else {
-            double hours = minutes / 60d;
-            eta = String.valueOf(hours);
+        long seconds = playerInfo.eta / 1000;
+        long minutes = seconds / 60;
+        long hours = minutes / 60;
+        String s = String.valueOf(seconds % 60);
+        String m = String.valueOf(minutes % 60);
+        String h = String.valueOf(hours % 24);
+        if (s.length() == 1) {
+            if (seconds < 10) {
+                s = "0" + s;
+            } else {
+                s = s + "0";
+            }
+        }
+        if (m.length() == 1) {
+            if (minutes < 10) {
+                m = "0" + m;
+            } else {
+                m = m + "0";
+            }
+        }
+        if (h.length() == 1) {
+            if (hours < 10) {
+                h = "0" + h;
+            } else {
+                h = h + "0";
+            }
+        }
+        String time;
+        if (hours > 0) {
+            time = h + "h " + m + "m";
+        } else {
+            time = m + "m " + s + "s";
         }
         switch (params) {
             case "pos":
                 value = playerInfo.position;
                 break;
             case "eta":
-                return eta;
+                return time;
             case "queue":
                 return playerInfo.queue;
         }
