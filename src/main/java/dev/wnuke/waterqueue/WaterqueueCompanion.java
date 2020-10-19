@@ -6,10 +6,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -42,7 +39,7 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
         if (getServer().getPluginManager().getPlugin("PlaceholderAPI") != null) {
             Placeholders placeholders = new Placeholders();
             placeholders.register();
-            getServer().getMessenger().registerIncomingPluginChannel(this, Placeholders.INFO_CHANNEL, placeholders);
+            getServer().getMessenger().registerIncomingPluginChannel(this, Global.INFO_CHANNEL, placeholders);
         }
         getLogger().info("Waterqueue by wnuke loaded.");
     }
@@ -55,6 +52,12 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
         }
         event.getPlayer().setGameMode(GameMode.SPECTATOR);
         event.getPlayer().teleport(end.getSpawnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
+        event.setJoinMessage(null);
+    }
+
+    @EventHandler
+    public void playerLeave(PlayerQuitEvent event) {
+        event.setQuitMessage(null);
     }
 
     @EventHandler

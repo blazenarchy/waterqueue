@@ -1,5 +1,7 @@
 package dev.wnuke.waterqueue;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
@@ -12,6 +14,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.HashMap;
 
+
 public final class Waterqueue extends Plugin {
     public static boolean logQueue = false;
     public static Waterqueue INSTANCE;
@@ -19,6 +22,13 @@ public final class Waterqueue extends Plugin {
     public static QueueManager manager;
     public ServerInfo defaultQueueServer;
     public ServerInfo defaultPlayServer;
+
+    public static void sendPlayerQueueInfo(QueuedPlayerInfo playerInfo, Queue queue) {
+        //noinspection UnstableApiUsage
+        final ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(Global.gson.toJson(playerInfo));
+        queue.queueServer.sendData(Global.INFO_CHANNEL, out.toByteArray());
+    }
 
     @Override
     public void onEnable() {

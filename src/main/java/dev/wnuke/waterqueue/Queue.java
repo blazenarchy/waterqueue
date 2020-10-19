@@ -31,16 +31,16 @@ public class Queue implements Listener, Comparable<Queue> {
     }
 
     public void join(ProxiedPlayer player) {
-        Waterqueue.INSTANCE.logQueue(player.getName() + " has joined the \"" + name + "\" queue.");
-        if (players.peekFirst() == player) {
-            playerTimeFirst.put(player.getUniqueId(), new Date().getTime());
-        }
         players.add(player);
         playerAddresses.add(player.getSocketAddress());
-        player.connect(queueServer);
+        if (player.getServer().getInfo() != queueServer) player.connect(queueServer);
+        Waterqueue.INSTANCE.logQueue(player.getName() + " has joined the \"" + name + "\" queue.");
+        if (players.getFirst() == player) {
+            playerTimeFirst.put(player.getUniqueId(), new Date().getTime());
+        }
         long pos = getQueuePos(player);
         sendQueuePos(player, pos);
-        Placeholders.sendPlayerQueueInfo(new QueuedPlayerInfo(player.getUniqueId(), getPlayerEta(player, pos), pos, name), this);
+        Waterqueue.sendPlayerQueueInfo(new QueuedPlayerInfo(player.getUniqueId(), getPlayerEta(player, pos), pos, name), this);
     }
 
     public int getPlayerCount() {
@@ -87,7 +87,7 @@ public class Queue implements Listener, Comparable<Queue> {
                 for (ProxiedPlayer player : players) {
                     long pos = getQueuePos(player);
                     sendQueuePos(player, pos);
-                    Placeholders.sendPlayerQueueInfo(new QueuedPlayerInfo(player.getUniqueId(), getPlayerEta(player, pos), pos, name), this);
+                    Waterqueue.sendPlayerQueueInfo(new QueuedPlayerInfo(player.getUniqueId(), getPlayerEta(player, pos), pos, name), this);
                 }
             }
         }
