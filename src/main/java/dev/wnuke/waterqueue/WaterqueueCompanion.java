@@ -2,6 +2,7 @@ package dev.wnuke.waterqueue;
 
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
+import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,6 +36,7 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
             end.setKeepSpawnInMemory(true);
             end.setSpawnLocation(0, 512, 0);
             end.setPVP(false);
+            end.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         }
         saveDefaultConfig();
         deathKickMessage = getConfig().getString("death_kick_message", "You have died, please rejoin.");
