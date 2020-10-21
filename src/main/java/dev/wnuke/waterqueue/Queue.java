@@ -65,7 +65,7 @@ public class Queue implements Listener, Comparable<Queue> {
     }
 
     public void sendQueuePos(ProxiedPlayer player, boolean message) {
-        long newAverage = new Date().getTime() - timeLastLeft;
+        long newAverage = Waterqueue.activeAverageMode ? (new Date().getTime() - timeLastLeft) : 0;
         for (long time : timesInFirst) {
             newAverage += time;
         }
