@@ -1,4 +1,4 @@
-package dev.wnuke.waterqueue;
+package net.blazenarchy.waterqueue;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

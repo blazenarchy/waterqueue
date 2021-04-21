@@ -1,4 +1,4 @@
-package dev.wnuke.waterqueue;
+package net.blazenarchy.waterqueue;
 
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
@@ -8,11 +8,11 @@ import net.md_5.bungee.event.EventHandler;
 import java.util.*;
 
 public class QueueManager implements Listener {
-    private final HashMap<String, Queue> queues;
+    private final HashMap<String, net.blazenarchy.waterqueue.Queue> queues;
 
-    public QueueManager(HashMap<String, Queue> queues) {
+    public QueueManager(HashMap<String, net.blazenarchy.waterqueue.Queue> queues) {
         this.queues = queues;
-        for (Queue queue : queues.values()) {
+        for (net.blazenarchy.waterqueue.Queue queue : queues.values()) {
             Waterqueue.INSTANCE.getProxy().getPluginManager().registerListener(Waterqueue.INSTANCE, queue);
         }
     }
@@ -24,15 +24,15 @@ public class QueueManager implements Listener {
             permissions.append(permission).append(", ");
         }
         Waterqueue.INSTANCE.logQueue(event.getPlayer().getName() + " has the following permissions: " + permissions.toString());
-        ArrayList<Queue> playerQueues = new ArrayList<>();
-        for (Map.Entry<String, Queue> queueEntry : queues.entrySet()) {
+        ArrayList<net.blazenarchy.waterqueue.Queue> playerQueues = new ArrayList<>();
+        for (Map.Entry<String, net.blazenarchy.waterqueue.Queue> queueEntry : queues.entrySet()) {
             if (event.getPlayer().hasPermission("waterqueue.queue." + queueEntry.getKey())) {
                 playerQueues.add(queueEntry.getValue());
             }
         }
-        playerQueues.sort(Queue::compareTo);
+        playerQueues.sort(net.blazenarchy.waterqueue.Queue::compareTo);
         if (!playerQueues.isEmpty()) {
-            Queue queue = playerQueues.get(playerQueues.size() - 1);
+            net.blazenarchy.waterqueue.Queue queue = playerQueues.get(playerQueues.size() - 1);
             queue.playServer.ping(new PingCallback(queue, event.getPlayer()));
             Waterqueue.INSTANCE.logQueue(event.getPlayer().getName() + " going into \"" + queue.name + "\" queue.");
         }
@@ -40,18 +40,18 @@ public class QueueManager implements Listener {
 
     @EventHandler
     public void onDisconnect(ServerDisconnectEvent event) {
-        ArrayList<Queue> queuesForServer = new ArrayList<>();
-        for (Queue queue : queues.values()) {
+        ArrayList<net.blazenarchy.waterqueue.Queue> queuesForServer = new ArrayList<>();
+        for (net.blazenarchy.waterqueue.Queue queue : queues.values()) {
             if (queue.playServer == event.getTarget()) {
                 if (queue.getPlayerCount() > 0) {
                     queuesForServer.add(queue);
                 }
             }
         }
-        queuesForServer.sort(Queue::compareTo);
+        queuesForServer.sort(net.blazenarchy.waterqueue.Queue::compareTo);
         long longestWait = 0;
         long time = new Date().getTime();
-        Queue nextUp = null;
+        net.blazenarchy.waterqueue.Queue nextUp = null;
         for (Queue queue : queuesForServer) {
             long wait = (time - queue.timeLastLeft) * queue.priority;
             if (wait >= longestWait) {

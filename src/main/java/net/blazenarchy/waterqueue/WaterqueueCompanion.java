@@ -1,5 +1,7 @@
-package dev.wnuke.waterqueue;
+package net.blazenarchy.waterqueue;
 
+import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.GameRule;
@@ -11,6 +13,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginMessageListener {
     public static WaterqueueCompanion INSTANCE;
@@ -34,7 +37,7 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
             end.setDifficulty(Difficulty.PEACEFUL);
             end.setMonsterSpawnLimit(0);
             end.setKeepSpawnInMemory(true);
-            end.setSpawnLocation(0, 512, 0);
+            end.setSpawnLocation(0, 1024, 0);
             end.setPVP(false);
             end.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         }
@@ -62,24 +65,24 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
         event.getPlayer().setBedSpawnLocation(end.getSpawnLocation(), true);
         event.getPlayer().setGameMode(GameMode.SPECTATOR);
         event.getPlayer().teleport(end.getSpawnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
-        event.setJoinMessage(null);
+        event.joinMessage(null);
     }
 
     @EventHandler
     public void playerLeave(PlayerQuitEvent event) {
-        event.setQuitMessage(null);
+        event.quitMessage(null);
     }
 
     @EventHandler
     public void playerDeath(PlayerDeathEvent event) {
         event.getEntity().setHealth(20);
         event.getEntity().teleport(end.getSpawnLocation(), PlayerTeleportEvent.TeleportCause.PLUGIN);
-        event.getEntity().kickPlayer(deathKickMessage);
-        event.setDeathMessage(null);
+        event.getEntity().kick(Component.text(deathKickMessage));
+        event.deathMessage(null);
     }
 
     @EventHandler
-    public void playerChat(AsyncPlayerChatEvent event) {
+    public void playerChat(AsyncChatEvent event) {
         event.setCancelled(true);
     }
 
@@ -96,7 +99,5 @@ public class WaterqueueCompanion extends JavaPlugin implements Listener, PluginM
     }
 
     @Override
-    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-
-    }
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message) { }
 }

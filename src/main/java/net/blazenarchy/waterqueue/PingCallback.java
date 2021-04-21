@@ -1,4 +1,4 @@
-package dev.wnuke.waterqueue;
+package net.blazenarchy.waterqueue;
 
 import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ServerPing;

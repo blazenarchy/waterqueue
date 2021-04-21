@@ -1,4 +1,4 @@
-package dev.wnuke.waterqueue;
+package net.blazenarchy.waterqueue;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class Placeholders extends PlaceholderExpansion implements PluginMessageL
     }
 
     @Override
-    public String getIdentifier() {
+    public @NotNull String getIdentifier() {
         return "waterqueue";
     }
 
@@ -33,17 +34,17 @@ public class Placeholders extends PlaceholderExpansion implements PluginMessageL
     }
 
     @Override
-    public String getAuthor() {
+    public @NotNull String getAuthor() {
         return "wnuke";
     }
 
     @Override
-    public String getVersion() {
+    public @NotNull String getVersion() {
         return WaterqueueCompanion.INSTANCE.getDescription().getVersion();
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String params) {
+    public String onPlaceholderRequest(Player player, @NotNull String params) {
         long value = -1;
         QueuedPlayerInfo playerInfo = null;
         for (QueuedPlayerInfo info : players) {
@@ -99,7 +100,7 @@ public class Placeholders extends PlaceholderExpansion implements PluginMessageL
     }
 
     @Override
-    public void onPluginMessageReceived(final String channel, final Player player, final byte[] message) {
+    public void onPluginMessageReceived(final @NotNull String channel, final @NotNull Player player, final byte[] message) {
         if (!Global.INFO_CHANNEL.equals(channel)) return;
 
         //noinspection UnstableApiUsage

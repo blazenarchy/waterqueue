@@ -2,7 +2,7 @@ death_kick_message: "You have died, please rejoin." # only used by the companion
 
 active_queue: false # only set to true if there are players leaving your queue destination (main/play) server very often
 default_queue_server: "queue" # must be set to the name of a server specified in BungeeCord/Waterfall config
-default_play_server: "anarchy" # must be set to the name of a server specified in BungeeCord/Waterfall config
+default_play_server: "main" # must be set to the name of a server specified in BungeeCord/Waterfall config
 queue_logs: false # Whether or not to log information on player Queuing (very "spammy" in logs, disable unless debugging"
 queues:
   normal: 1 # format is "queueName: priority" priority must be an integer, to add a player to a queue give them the permission "waterqueue.queue.queueName" (in the BungeeCord/Waterfall server)

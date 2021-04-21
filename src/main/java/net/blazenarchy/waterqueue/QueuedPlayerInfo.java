@@ -1,4 +1,4 @@
-package dev.wnuke.waterqueue;
+package net.blazenarchy.waterqueue;
 
 import java.util.UUID;
 
